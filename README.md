@@ -12,7 +12,7 @@ This is my backend assignment submission of TikTok Tech Immersion Programme 2023
 4. Build the project using ```docker-compose build``` and run using ```docker-compose up -d```
 5. Create databases assignment_demo_2023 and assignment_demo_2023_test in the Docker instance. It can be done by executing 
 
-```docker exec -d assignment_demo_2023-postgres-1 psql -d postgres -U postgres_user -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_2023_demo; CREATE DATABASE assignment_2023_demo;'```
+```docker exec -it assignment_demo_2023-postgres-1 psql -U postgres_user -c 'DROP DATABASE IF EXISTS assignment_demo_2023' -c 'CREATE DATABASE assignment_demo_2023'```
 
 and likewise for database assignment_2023_demo_test (for the test instance) while the Docker instance is running. Replace postgres_user with the actual username used to connect to PostgreSQL.
 

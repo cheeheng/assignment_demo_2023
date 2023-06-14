@@ -75,9 +75,11 @@ jobs:
       # https://stackoverflow.com/questions/9736085/run-a-postgresql-sql-file-using-command-line-arguments
       # Since drop database and create database cannot be done in a transaction block, I need to set autocommit to on. Reference: 
       # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
+      # How to drop database and create database at the same time without the transaction block error, reference:
+      # https://dba.stackexchange.com/questions/318029/run-both-of-drop-database-and-creat-database-in-cli-with-c-option-of-psql
       - name: Set up PostgreSQL
         run: | 
-          docker exec -d assignment_demo_2023_postgres_1 psql -d postgres -U postgres -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_demo_2023_test; CREATE DATABASE assignment_demo_2023_test;'
+          docker exec -it assignment_demo_2023_postgres_1 psql -U postgres -c 'DROP DATABASE IF EXISTS assignment_demo_2023_test' -c 'CREATE DATABASE assignment_demo_2023_test'
 
       - name: Build
         run: go build -v ./...
