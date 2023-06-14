@@ -17,7 +17,7 @@ type dbConnectionParam struct {
 }
 
 var connectionParam = dbConnectionParam{
-	host:     "postgres",
+	host:     "172.21.0.3",
 	port:     5432,
 	user:     "postgres",
 	dbname:   "assignment_demo_2023",

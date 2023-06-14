@@ -46,7 +46,7 @@ Replace [sender] with the sender, [receiver] with the receiver, and [message] wi
 To retrieve what is in the chat, one can use the following command:
 
 ```
-localhost:8080/api/pull?chat=[chat]&cursor=[cursor]&limit=[limit]&reverse=[reverse]
+curl 'localhost:8080/api/pull?chat=[chat]&cursor=[cursor]&limit=[limit]&reverse=[reverse]'
 ```
 
 Replace [chat], [cursor], [limit] and [reverse] with the appropriate values accordingly. Note that [cursor], [limit] and [reverse] are optional, with default values of 0 (i.e. starting from first message), 10 (i.e. at most 10 messages returned) and false (i.e. starting from the newest message) respectively. The parameters can appear in any order.
