@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"log"
+	"math"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/TikTokTechImmersion/assignment_demo_2023/http-server/kitex_gen/rpc"
@@ -48,6 +51,29 @@ func sendMessage(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, "Failed to parse request body: %v", err)
 		return
 	}
+
+	sender := c.Query("sender")
+	receiver := c.Query("receiver")
+
+	if sender == "" || receiver == "" {
+		c.String(consts.StatusBadRequest, "Sender name and receiver name cannot be empty")
+		return
+	}
+
+	if strings.Count(sender, ":") >= 1 || strings.Count(receiver, ":") >= 1 {
+		c.String(consts.StatusBadRequest, "Sender name and receiver name cannot contain the character :")
+		return
+	}
+
+	if strings.Compare(sender, receiver) < 0 {
+		req.Chat = sender + ":" + receiver
+	} else {
+		req.Chat = receiver + ":" + sender
+	}
+
+	req.Text = c.Query("text")
+	req.Sender = sender
+
 	resp, err := cli.Send(ctx, &rpc.SendRequest{
 		Message: &rpc.Message{
 			Chat:   req.Chat,
@@ -64,11 +90,70 @@ func sendMessage(ctx context.Context, c *app.RequestContext) {
 	}
 }
 
+const (
+	defaultCursor = 0
+	defaultLimit  = 10
+)
+
 func pullMessage(ctx context.Context, c *app.RequestContext) {
 	var req api.PullRequest
 	err := c.Bind(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, "Failed to parse request body: %v", err)
+		return
+	}
+
+	req.Chat = c.Query("chat")
+	tempCursor := c.Query("cursor")
+	tempLimit := c.Query("limit")
+	tempReverse := strings.ToLower(c.Query("reverse"))
+
+	if strings.Count(req.Chat, ":") != 1 {
+		c.String(consts.StatusBadRequest, "Chat parameter should be in the form <member1>:<member2>, denoting a chat between two users")
+		return
+	}
+
+	if tempCursor == "" {
+		req.Cursor = defaultCursor
+	} else {
+		cursorInt, errConv := strconv.Atoi(tempCursor)
+		if errConv != nil {
+			c.String(consts.StatusBadRequest, "Cursor of %s is not an integer", tempCursor)
+			return
+		}
+		req.Cursor = int64(cursorInt)
+	}
+
+	if req.Cursor < 0 {
+		c.String(consts.StatusBadRequest, "Cursor cannot be negative")
+		return
+	}
+
+	if tempLimit == "" {
+		req.Limit = defaultLimit
+	} else {
+		limitInt, errConv := strconv.Atoi(tempLimit)
+		if errConv != nil {
+			c.String(consts.StatusBadRequest, "Limit of %s is not an integer", tempLimit)
+			return
+		}
+		req.Limit = int32(limitInt)
+	}
+
+	if req.Limit < 0 {
+		c.String(consts.StatusBadRequest, "Limit cannot be negative")
+		return
+	} else if req.Limit == math.MaxInt32 {
+		c.String(consts.StatusBadRequest, "Max supported value of limit is %d", math.MaxInt32-1)
+		return
+	}
+
+	if tempReverse == "true" {
+		req.Reverse = true
+	} else if tempReverse == "false" || tempReverse == "" {
+		req.Reverse = false
+	} else {
+		c.String(consts.StatusInternalServerError, "Invalid reverse parameter, it should be either true or false")
 		return
 	}
 

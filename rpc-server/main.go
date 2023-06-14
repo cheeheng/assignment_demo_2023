@@ -10,17 +10,18 @@ import (
 )
 
 func main() {
-	r, err := etcd.NewEtcdRegistry([]string{"etcd:2379"}) // r should not be reused.
-	if err != nil {
-		log.Fatal(err)
+	r, svrConnectErr := etcd.NewEtcdRegistry([]string{"etcd:2379"}) // r should not be reused.
+	if svrConnectErr != nil {
+		log.Fatal(svrConnectErr)
 	}
 
 	svr := rpc.NewServer(new(IMServiceImpl), server.WithRegistry(r), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 		ServiceName: "demo.rpc.server",
 	}))
 
-	err = svr.Run()
-	if err != nil {
-		log.Println(err.Error())
+	// Runs the server
+	svrConnectErr = svr.Run()
+	if svrConnectErr != nil {
+		log.Println(svrConnectErr.Error())
 	}
 }

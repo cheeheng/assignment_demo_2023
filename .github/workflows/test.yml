@@ -1,5 +1,6 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+# Note: putting version of go as 1.19 here because GitHub Actions does not support go 1.20 yet
 
 name: Tests
 
@@ -10,7 +11,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   http-server:
     runs-on: ubuntu-latest
     defaults:
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
 
       - name: Build
         run: go build -v ./...
@@ -38,13 +38,50 @@ jobs:
     defaults:
       run:
         working-directory: ./rpc-server
+    # Install PostgreSQL for rpc-server to run
+    # https://github.com/actions/example-services/issues/22#issuecomment-633220291
+    services:
+      postgres:
+        image: postgres:latest 
+        env:
+          POSTGRES_PASSWORD: blank
+          POSTGRES_USER: postgres
+          POSTGRES_DB: assignment_2023_demo_test
+        # Wait for PostgreSQL to start
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
+      
+      # Setting up Docker is required because a Docker instance will be used for testing the database
+      - name: Run Docker Compose
+        run: docker-compose up -d
+      
+      # Access PostgreSQL, reference:
+      # https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
+      # Create database if it does not exist, deleting all existing data, reference:
+      # https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql
+      # Run PostgreSQL script using command line
+      # https://stackoverflow.com/questions/9736085/run-a-postgresql-sql-file-using-command-line-arguments
+      # Since drop database and create database cannot be done in a transaction block, I need to set autocommit to on. Reference: 
+      # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
+      # How to drop database and create database at the same time without the transaction block error, reference:
+      # https://dba.stackexchange.com/questions/318029/run-both-of-drop-database-and-creat-database-in-cli-with-c-option-of-psql
+      # Fix input device is not TTY error, reference:
+      # https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty
+      - name: Set up PostgreSQL
+        run: | 
+          docker exec assignment_demo_2023_postgres_1 psql -U postgres -c 'DROP DATABASE IF EXISTS assignment_demo_2023_test' -c 'CREATE DATABASE assignment_demo_2023_test'
 
       - name: Build
         run: go build -v ./...
