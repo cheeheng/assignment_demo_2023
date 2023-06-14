@@ -77,9 +77,11 @@ jobs:
       # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
       # How to drop database and create database at the same time without the transaction block error, reference:
       # https://dba.stackexchange.com/questions/318029/run-both-of-drop-database-and-creat-database-in-cli-with-c-option-of-psql
+      # Fix input device is not TTY error, reference:
+      # https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty
       - name: Set up PostgreSQL
         run: | 
-          docker exec -it assignment_demo_2023_postgres_1 psql -U postgres -c 'DROP DATABASE IF EXISTS assignment_demo_2023_test' -c 'CREATE DATABASE assignment_demo_2023_test'
+          docker exec assignment_demo_2023_postgres_1 psql -U postgres -c 'DROP DATABASE IF EXISTS assignment_demo_2023_test' -c 'CREATE DATABASE assignment_demo_2023_test'
 
       - name: Build
         run: go build -v ./...

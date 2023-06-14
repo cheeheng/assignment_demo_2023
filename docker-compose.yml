@@ -60,3 +60,13 @@ services:
     logging:
       options:
         max-size: 10m
+    # Set fixed IP address, required to workaround DNS issue on Docker container when connecting to PostgreSQL test database
+    # Reference: https://www.howtogeek.com/devops/how-to-assign-a-static-ip-to-a-docker-container/
+    networks:
+      customnetwork:
+        ipv4_address: 172.21.0.3
+networks:
+  customnetwork:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
