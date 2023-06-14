@@ -73,8 +73,7 @@ jobs:
       # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
       - name: Set up PostgreSQL
         run: | 
-          PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c '\set AUTOCOMMIT on;'
-          PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'DROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
+          PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
           PGPASSWORD=blank psql -h localhost -d assignment_2023_demo_test -U postgres -a -f ../sql/create_tables.sql
 
       - name: Build
