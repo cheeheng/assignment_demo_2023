@@ -69,6 +69,11 @@ jobs:
       # https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql
       - name: Set up PostgreSQL
         run: PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'DROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
+      
+      # Run PostgreSQL script using command line
+      # https://stackoverflow.com/questions/9736085/run-a-postgresql-sql-file-using-command-line-arguments
+      - name: Initialise PostgreSQL table
+        run: PGPASSWORD=blank psql -h localhost -d assignment_2023_demo_test -U postgres -a -f ../sql/create_tables.sql
 
       - name: Build
         run: go build -v ./...
