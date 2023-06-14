@@ -66,7 +66,7 @@ jobs:
       # Access PostgreSQL, reference:
       # https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
       - name: Set up PostgreSQL
-        run: PGPASSWORD=blank psql -h postgres -d postgres -U postgres -c 'CREATE DATABASE assignment_2023_demo_test;'
+        run: PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'CREATE DATABASE assignment_2023_demo_test;'
 
       - name: Build
         run: go build -v ./...
