@@ -77,7 +77,7 @@ jobs:
       # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
       - name: Set up PostgreSQL
         run: | 
-          docker exec -d assignment_demo_2023_postgres_1 psql -d postgres -U postgres_user -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
+          docker exec -d assignment_demo_2023_postgres_1 psql -d postgres -U postgres_user -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_demo_2023_test; CREATE DATABASE assignment_demo_2023_test;'
 
       - name: Build
         run: go build -v ./...
