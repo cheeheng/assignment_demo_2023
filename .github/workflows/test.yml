@@ -63,6 +63,10 @@ jobs:
         with:
           go-version: 1.19
       
+      # Setting up Docker is required because a Docker instance will be used for testing the database
+      - name: Run Docker Compose
+        run: docker-compose up -d
+      
       # Access PostgreSQL, reference:
       # https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
       # Create database if it does not exist, deleting all existing data, reference:
