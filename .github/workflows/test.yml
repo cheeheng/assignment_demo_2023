@@ -67,13 +67,15 @@ jobs:
       # https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
       # Create database if it does not exists, deleting all existing data, reference:
       # https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql
-      - name: Set up PostgreSQL
-        run: PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'DROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
-      
       # Run PostgreSQL script using command line
       # https://stackoverflow.com/questions/9736085/run-a-postgresql-sql-file-using-command-line-arguments
-      - name: Initialise PostgreSQL table
-        run: PGPASSWORD=blank psql -h localhost -d assignment_2023_demo_test -U postgres -a -f ../sql/create_tables.sql
+      # Since drop database and create database cannot be done in a transaction block, I need to set autocommit to on. Reference: 
+      # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
+      - name: Set up PostgreSQL
+        run: | 
+          PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c '\set AUTOCOMMIT on;'
+          PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'DROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
+          PGPASSWORD=blank psql -h localhost -d assignment_2023_demo_test -U postgres -a -f ../sql/create_tables.sql
 
       - name: Build
         run: go build -v ./...
