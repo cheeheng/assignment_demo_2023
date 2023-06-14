@@ -9,8 +9,14 @@ This is my backend assignment submission of TikTok Tech Immersion Programme 2023
 1. Download the source code.
 2. Install Docker, PostgreSQL and Go 1.20 or later 
 3. Change the user and password regarding PostgreSQL database connection in docker-compose.yml and rpc-server/handler.go. If you are helping to develop the application, then the PostgreSQL user and password must be changed accordingly in .github/workflows/test.yml
-4. Create databases assignment_demo_2023 and assignment_demo_2023_test in the local PostgreSQL instance.
-5. Build the project using ```docker-compose build``` and run using ```docker-compose up -d```
+4. Build the project using ```docker-compose build``` and run using ```docker-compose up -d```
+5. Create databases assignment_demo_2023 and assignment_demo_2023_test in the Docker instance. It can be done by executing 
+
+```docker exec -d assignment_demo_2023-postgres-1 psql -d postgres -U postgres_user -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_2023_demo; CREATE DATABASE assignment_2023_demo;'```
+
+and likewise for database assignment_2023_demo_test (for the test instance) while the Docker instance is running. Replace postgres_user with the actual username used to connect to PostgreSQL.
+
+<h2>How to run the project</h2>
 
 To build the project, on the root directory of the project, execute the following command on the terminal:
 ```

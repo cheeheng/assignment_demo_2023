@@ -65,7 +65,7 @@ jobs:
       
       # Access PostgreSQL, reference:
       # https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
-      # Create database if it does not exists, deleting all existing data, reference:
+      # Create database if it does not exist, deleting all existing data, reference:
       # https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql
       # Run PostgreSQL script using command line
       # https://stackoverflow.com/questions/9736085/run-a-postgresql-sql-file-using-command-line-arguments
@@ -73,8 +73,7 @@ jobs:
       # https://stackoverflow.com/questions/26482777/create-database-cannot-run-inside-a-transaction-block
       - name: Set up PostgreSQL
         run: | 
-          PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
-          PGPASSWORD=blank psql -h localhost -d assignment_2023_demo_test -U postgres -a -f ../sql/create_tables.sql
+          docker exec -d assignment_demo_2023-postgres-1 psql -d postgres -U postgres_user -c '\set AUTOCOMMIT on\nDROP DATABASE IF EXISTS assignment_2023_demo; CREATE DATABASE assignment_2023_demo;'
 
       - name: Build
         run: go build -v ./...
