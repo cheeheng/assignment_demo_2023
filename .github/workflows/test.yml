@@ -65,8 +65,10 @@ jobs:
       
       # Access PostgreSQL, reference:
       # https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
+      # Create database if it does not exists, deleting all existing data, reference:
+      # https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql
       - name: Set up PostgreSQL
-        run: PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'CREATE DATABASE assignment_2023_demo_test;'
+        run: PGPASSWORD=blank psql -h localhost -d postgres -U postgres -c 'DROP DATABASE IF EXISTS assignment_2023_demo_test; CREATE DATABASE assignment_2023_demo_test;'
 
       - name: Build
         run: go build -v ./...
